@@ -1,0 +1,10 @@
+{
+  "uuid": "dollar@michael.ortiz",
+  "name": "Dollar",
+  "description": "Cotações do dollar em tempo real",
+  "version": 1,
+  "extension-id": "dollar-to-real",
+  "shell-version": [
+    "41"
+  ]
+}
