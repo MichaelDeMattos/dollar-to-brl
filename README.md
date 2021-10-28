@@ -23,6 +23,5 @@ SPDX-License-Identifier: GPL-2.0-or-later
 # How to install
 ```
 cd /tmp && git clone https://github.com/MichaelDeMattos/dollar-dotpyc.com.git && mv dollar-dotpyc.com dollar@dotpyc.com && cp -av dollar@dotpyc.com ~/.local/share/gnome-shell/extensions/ && gnome-shell-extension-tool --enable-extension dollar@dotpyc.com && rm -rf dollar@dotpyc.com
-
-To restart GNOME Shell in X11, pressing Alt+F2 to open the Run Dialog and enter restart (or just r).
 ```
+To restart GNOME Shell in X11, pressing Alt+F2 to open the Run Dialog and enter restart (or just r).
