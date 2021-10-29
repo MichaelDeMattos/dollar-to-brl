@@ -20,7 +20,6 @@
 
 const {St, Gio, Clutter, Soup, GLib} = imports.gi;
 
-const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Main = imports.ui.main;
@@ -30,43 +29,48 @@ let panelButton;
 let panelButtonText;
 let _httpSession;
 let _dollarQuatation;
-
-panelButton = new St.Bin({
-    style_class : "panel-button",
-});
+let sourceId = null;
 
 // Start application
 function init(){
     log(`initializing ${Me.metadata.name}`);
-    load_json_async();
-    setInterval(load_json_async, 30000);
 }
 
 // Add the button to the panel
-function enable(){
+function enable() {
     log(`enabling ${Me.metadata.name}`);
+    panelButton = new St.Bin({
+        style_class : "panel-button",
+    });
+
+    load_json_async();
     Main.panel._centerBox.insert_child_at_index(panelButton, 0);
+    sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
+        load_json_async();
+        return GLib.SOURCE_CONTINUE;
+    });
 }
 
 // Remove the added button from panel
 function disable(){
     log(`disabling ${Me.metadata.name}`);
     Main.panel._centerBox.remove_child(panelButton);
+    
+    if (panelButton) {
+        panelButton.destroy();
+        panelButton = null;
+    }
+
+    if (sourceId) {
+        GLib.Source.remove(sourceId);
+        sourceId = null;
+    }
 }
 
-// Interval to execute function
-function setInterval(func, delay){
-    const wrappedFunc = () => {
-        return func.apply(this) || true;
-    };
-    return GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, wrappedFunc);
-}
-
-// Requests API Dollar to Real
+// Requests API Dollar
 function load_json_async(){
     if (_httpSession === undefined) {
         _httpSession = new Soup.Session();
-        _httpSession.user_agent = "http://dotpyc.com";
     } 
         else {
         _httpSession.abort();
@@ -77,7 +81,7 @@ function load_json_async(){
         "http://economia.awesomeapi.com.br/json/last/USD-BRL", 
         {});
     
-    _httpSession.queue_message(message, Lang.bind(this, function(_httpSession, message){
+    _httpSession.queue_message(message, () => {
         try {
             if (!message.response_body.data) {
                 panelButtonText = new St.Label({
@@ -93,7 +97,7 @@ function load_json_async(){
             _dollarQuatation = jp["USDBRL"]["bid"];
             _dollarQuatation = _dollarQuatation.split(".");
             _dollarQuatation = _dollarQuatation[0] + "," + _dollarQuatation[1].substring(0,2);
-            
+   
             panelButtonText = new St.Label({
                 text : "(USD: 1,00) = (BRL: " + _dollarQuatation + ")",
                 y_align: Clutter.ActorAlign.CENTER,
@@ -113,6 +117,6 @@ function load_json_async(){
             _httpSession.abort();
             return;
         }
-    }));
+    });
     return;
 }
