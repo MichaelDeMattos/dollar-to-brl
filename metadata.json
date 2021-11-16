@@ -1,8 +1,8 @@
 {
   "uuid": "dollar@dotpyc.com",
   "name": "Dollar",
-  "description": "Cotações do dólar USD para o real BRL em tempo real.",
-  "version": 1.1,
-  "shell-version": ["36", "3.38", "40", "41"],
+  "description": "Cotações do (USD Dólar Americano) convertivo para (BRL Real Brasileiro).\nAs atualizações são recebidas a cada 30 segundos e utiliza como base informações disponiblizadas pela API AwesomeAPI, que pode ser consultada diretamente acessando o endereço eletronico https://docs.awesomeapi.com.br.",
+  "version": 1.2,
+  "shell-version": ["3.38", "40", "41", "41.1"],
   "url": "https://github.com/michaeldemattos/dollar-dotpyc.com"
 }

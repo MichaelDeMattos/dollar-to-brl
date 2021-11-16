@@ -1,6 +1,6 @@
 # dollar-dotpyc.com
 ```
-Extension to Gnome-Shell in versions (36,38,40,41), for conversion dollar USD in real BRL.
+Extension to Gnome-Shell in versions (38, 40, 41 or >), for conversion dollar USD in real BRL.
 ```
 
 # Licence
