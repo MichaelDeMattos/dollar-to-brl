@@ -28,7 +28,7 @@ const PanelMenu = imports.ui.panelMenu;
 let panelButton;
 let panelButtonText;
 let _httpSession;
-let _dollarQuatation;
+let _dollarQuotation;
 let sourceId = null;
 
 // Start application
@@ -85,7 +85,7 @@ function load_json_async(){
         try {
             if (!message.response_body.data) {
                 panelButtonText = new St.Label({
-                    text : "Not content body",
+                    text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
                     y_align: Clutter.ActorAlign.CENTER,
                 });
                 panelButton.set_child(panelButtonText);
@@ -94,12 +94,12 @@ function load_json_async(){
             }
 
             let jp = JSON.parse(message.response_body.data);
-            _dollarQuatation = jp["USDBRL"]["bid"];
-            _dollarQuatation = _dollarQuatation.split(".");
-            _dollarQuatation = _dollarQuatation[0] + "," + _dollarQuatation[1].substring(0,2);
+            _dollarQuotation = jp["USDBRL"]["bid"];
+            _dollarQuotation = _dollarQuotation.split(".");
+            _dollarQuotation = _dollarQuotation[0] + "," + _dollarQuotation[1].substring(0,2);
    
             panelButtonText = new St.Label({
-                text : "(USD: 1,00) = (BRL: " + _dollarQuatation + ")",
+                text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")",
                 y_align: Clutter.ActorAlign.CENTER,
             });
 
@@ -109,7 +109,7 @@ function load_json_async(){
 
         } catch (e) {
             panelButtonText = new St.Label({
-                text : "Request error",
+                text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
                 y_align: Clutter.ActorAlign.CENTER,
             });
 
