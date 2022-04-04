@@ -78,7 +78,7 @@ function load_json_async(){
 
     let message = Soup.form_request_new_from_hash(
         'GET', 
-        "http://economia.awesomeapi.com.br/json/last/USD-BRL", 
+        "https://economia.awesomeapi.com.br/last/USD-BRL", 
         {});
     
     _httpSession.queue_message(message, () => {
@@ -94,7 +94,7 @@ function load_json_async(){
             }
 
             let jp = JSON.parse(message.response_body.data);
-            _dollarQuotation = jp["USDBRL"]["bid"];
+            _dollarQuotation = jp["USD"]["bid"];
             _dollarQuotation = _dollarQuotation.split(".");
             _dollarQuotation = _dollarQuotation[0] + "," + _dollarQuotation[1].substring(0,2);
    
