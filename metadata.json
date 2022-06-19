@@ -1,8 +1,8 @@
 {
-  "uuid": "dollar@dotpyc.com",
+  "uuid": "dollar-to-brl",
   "name": "Dollar",
-  "description": "Cotações do (USD Dólar Americano) convertivo para (BRL Real Brasileiro).\nAs atualizações são recebidas a cada 30 segundos e utiliza como base informações disponiblizadas pela API AwesomeAPI, que pode ser consultada diretamente acessando o endereço eletronico https://docs.awesomeapi.com.br.",
-  "version": 1.2,
-  "shell-version": ["3.38", "40", "41", "41.1"],
-  "url": "https://github.com/michaeldemattos/dollar-dotpyc.com"
+  "description": "Extension to Gnome-Shell in versions (38, 40, 41, 42 or >), for conversion dollar USD in real BRL, using API AWESOMEAPI https://docs.awesomeapi.com.br.",
+  "version": 1.3,
+  "shell-version": ["3.38", "40", "41", "42"],
+  "url": "https://github.com/MichaelDeMattos/dollar-to-brl"
 }

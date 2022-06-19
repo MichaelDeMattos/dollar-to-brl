@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   extension.js                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: michael.ortiz <michael.ortiz@dotpyc.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/18 22:37:14 by michael.ort       #+#    #+#             */
+/*   Updated: 2022/06/18 22:37:17 by michael.ort      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 /* extension.js
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +30,7 @@
 
 'use strict';
 
-const {St, Gio, Clutter, Soup, GLib} = imports.gi;
+const { St, Gio, Clutter, Soup, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -32,7 +44,7 @@ let _dollarQuotation;
 let sourceId = null;
 
 // Start application
-function init(){
+function init() {
     log(`initializing ${Me.metadata.name}`);
 }
 
@@ -40,7 +52,7 @@ function init(){
 function enable() {
     log(`enabling ${Me.metadata.name}`);
     panelButton = new St.Bin({
-        style_class : "panel-button",
+        style_class: "panel-button",
     });
 
     load_json_async();
@@ -52,10 +64,10 @@ function enable() {
 }
 
 // Remove the added button from panel
-function disable(){
+function disable() {
     log(`disabling ${Me.metadata.name}`);
     Main.panel._centerBox.remove_child(panelButton);
-    
+
     if (panelButton) {
         panelButton.destroy();
         panelButton = null;
@@ -68,24 +80,24 @@ function disable(){
 }
 
 // Requests API Dollar
-function load_json_async(){
+function load_json_async() {
     if (_httpSession === undefined) {
         _httpSession = new Soup.Session();
-    } 
-        else {
+    }
+    else {
         _httpSession.abort();
     }
 
     let message = Soup.form_request_new_from_hash(
-        'GET', 
-        "https://economia.awesomeapi.com.br/last/USD-BRL", 
+        'GET',
+        "https://economia.awesomeapi.com.br/last/USD-BRL",
         {});
-    
+
     _httpSession.queue_message(message, () => {
         try {
             if (!message.response_body.data) {
                 panelButtonText = new St.Label({
-                    text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
+                    text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
                     y_align: Clutter.ActorAlign.CENTER,
                 });
                 panelButton.set_child(panelButtonText);
@@ -94,12 +106,12 @@ function load_json_async(){
             }
 
             let jp = JSON.parse(message.response_body.data);
-            _dollarQuotation = jp["USD"]["bid"];
+            _dollarQuotation = jp["USDBRL"]["bid"];
             _dollarQuotation = _dollarQuotation.split(".");
-            _dollarQuotation = _dollarQuotation[0] + "," + _dollarQuotation[1].substring(0,2);
-   
+            _dollarQuotation = _dollarQuotation[0] + "," + _dollarQuotation[1].substring(0, 2);
+
             panelButtonText = new St.Label({
-                text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")",
+                text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")",
                 y_align: Clutter.ActorAlign.CENTER,
             });
 
@@ -109,7 +121,7 @@ function load_json_async(){
 
         } catch (e) {
             panelButtonText = new St.Label({
-                text : "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
+                text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
                 y_align: Clutter.ActorAlign.CENTER,
             });
 
