@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   extension.js                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: michael.ortiz <michael.ortiz@dotpyc.com    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/18 22:37:14 by michael.ort       #+#    #+#             */
-/*   Updated: 2022/06/18 22:37:17 by michael.ort      ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 /* extension.js
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,8 +27,8 @@ const PanelMenu = imports.ui.panelMenu;
 
 let panelButton;
 let panelButtonText;
-let _httpSession;
-let _dollarQuotation;
+let session;
+let dollarQuotation;
 let sourceId = null;
 
 // Start application
@@ -55,10 +43,10 @@ function enable() {
         style_class: "panel-button",
     });
 
-    load_json_async();
+    handle_request_dollar_api();
     Main.panel._centerBox.insert_child_at_index(panelButton, 0);
     sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
-        load_json_async();
+        handle_request_dollar_api();
         return GLib.SOURCE_CONTINUE;
     });
 }
@@ -79,56 +67,48 @@ function disable() {
     }
 }
 
-// Requests API Dollar
-function load_json_async() {
-    if (_httpSession === undefined) {
-        _httpSession = new Soup.Session();
-    }
-    else {
-        _httpSession.abort();
-    }
-
-    let message = Soup.form_request_new_from_hash(
-        'GET',
-        "https://economia.awesomeapi.com.br/last/USD-BRL",
-        {});
-
-    _httpSession.queue_message(message, () => {
-        try {
-            if (!message.response_body.data) {
-                panelButtonText = new St.Label({
-                    text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
-                    y_align: Clutter.ActorAlign.CENTER,
-                });
-                panelButton.set_child(panelButtonText);
-                _httpSession.abort();
-                return;
-            }
-
-            let jp = JSON.parse(message.response_body.data);
-            _dollarQuotation = jp["USDBRL"]["bid"];
-            _dollarQuotation = _dollarQuotation.split(".");
-            _dollarQuotation = _dollarQuotation[0] + "," + _dollarQuotation[1].substring(0, 2);
-
-            panelButtonText = new St.Label({
-                text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")",
-                y_align: Clutter.ActorAlign.CENTER,
-            });
-
-            panelButton.set_child(panelButtonText);
-            _httpSession.abort();
-            return;
-
-        } catch (e) {
-            panelButtonText = new St.Label({
-                text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
-                y_align: Clutter.ActorAlign.CENTER,
-            });
-
-            panelButton.set_child(panelButtonText);
-            _httpSession.abort();
-            return;
+// Handle Requests API Dollar
+async function handle_request_dollar_api() {
+    try {
+        // Create a new Soup Session
+        if (!session) {
+            session = new Soup.Session({ timeout: 10 });
         }
-    });
-    return;
+
+        // Create body of Soup request
+        let message = Soup.Message.new_from_encoded_form(
+            "GET", "https://economia.awesomeapi.com.br/last/USD-BRL", Soup.form_encode_hash({}));
+
+        // Send Soup request to API Server
+        await session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_, r0) => {
+            let text = session.send_and_read_finish(r0);
+            let response = new TextDecoder().decode(text.get_data());
+            const body_response = JSON.parse(response);
+
+            // Get the value of Dollar Quotation
+            dollarQuotation = body_response["USDBRL"]["bid"];
+            dollarQuotation = dollarQuotation.split(".");
+            dollarQuotation = dollarQuotation[0] + "," + dollarQuotation[1].substring(0, 2);
+
+            // Sext text in Widget
+            panelButtonText = new St.Label({
+                text: "(USD: 1,00) = (BRL: " + dollarQuotation + ")",
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            panelButton.set_child(panelButtonText);
+
+            // Finish Soup Session
+            session.abort();
+            text = undefined;
+            response = undefined;
+        });
+    } catch (error) {
+        log(`Traceback Error in [handle_request_dollar_api]: ${error}`);
+        panelButtonText = new St.Label({
+            text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        panelButton.set_child(panelButtonText);
+        session.abort();
+    }
 }
