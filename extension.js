@@ -90,7 +90,7 @@ async function handle_request_dollar_api() {
             dollarQuotation = dollarQuotation.split(".");
             dollarQuotation = dollarQuotation[0] + "," + dollarQuotation[1].substring(0, 2);
 
-            // Sext text in Widget
+            // Set text in Widget
             panelButtonText = new St.Label({
                 text: "(USD: 1,00) = (BRL: " + dollarQuotation + ")",
                 y_align: Clutter.ActorAlign.CENTER,

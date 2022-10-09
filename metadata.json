@@ -2,7 +2,7 @@
   "uuid": "dollar-to-brl",
   "name": "Dollar",
   "description": "Convert Dollar USD to Real BRL using API AWESOMEAPI https://docs.awesomeapi.com.br.",
-  "version": 1.5,
-  "shell-version": ["41", "42", "42.4"],
+  "version": 1.6,
+  "shell-version": ["41", "42", "42.4", "43"],
   "url": "https://github.com/MichaelDeMattos/dollar-to-brl"
 }
