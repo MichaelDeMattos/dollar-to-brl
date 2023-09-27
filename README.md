@@ -1,6 +1,6 @@
 # dollar-to-brl
 ```
-Gnome-Shell Extension (41.x,42.x), for conversion dollar USD to real BRL.
+Gnome-Shell Extension (41.x,42.x,43.x,44.x), for conversion dollar USD to real BRL.
 ```
 
 # Licence
