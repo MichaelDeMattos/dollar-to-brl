@@ -18,12 +18,16 @@
 
 'use strict';
 
-const { St, Gio, Clutter, Soup, GLib } = imports.gi;
+//const { St, Gio, Clutter, Soup, GLib } = imports.gi;
+import { St, Gio, Clutter, Soup, GLib } from 'gi';
 
-const ExtensionUtils = imports.misc.extensionUtils;
+//const ExtensionUtils = imports.misc.extensionUtils;
+import * as ExtensionUtils from "resource:///org/gnome/shell/misc/extensionUtils";
 const Me = ExtensionUtils.getCurrentExtension();
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
+//const Main = imports.ui.main;
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+//const PanelMenu = imports.ui.panelMenu;
+import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
 
 let panelButton;
 let panelButtonText;
