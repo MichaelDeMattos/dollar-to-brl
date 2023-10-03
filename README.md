@@ -29,3 +29,30 @@ To restart GNOME Shell in X11, pressing Alt+F2 to open the Run Dialog and enter 
 # Preview
 ![image](https://user-images.githubusercontent.com/57331815/139193026-c7a321e5-0ba2-45e4-85dc-d1924045f43a.png)
 
+# Getting started
+* Fork this repository (Click the Fork button in the top right of this page, click your Profile Image)
+* Clone your fork down to your local machine
+
+```markdown
+git clone https://github.com/your-username/dollar-to-brl.git
+```
+
+* Create a branch
+
+```markdown
+git checkout -b branch-name
+```
+
+* Make your changes (choose from any task below)
+* Commit and push
+
+```markdown
+git add .
+git commit -m 'Commit message'
+git push origin branch-name
+```
+
+* Create a new pull request from your forked repository (Click the `New Pull Request` button located at the top of your repo)
+* Wait for your PR review and merge approval!
+* __Star this repository__ if you had fun!
+
