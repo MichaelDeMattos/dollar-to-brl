@@ -18,10 +18,12 @@
 
 'use strict';
 
-import { St, Gio, Clutter, Soup, GLib } from 'gi';
-import * as ExtensionUtils from "resource:///org/gnome/shell/misc/extensionUtils";
+const { St, Gio, Clutter, Soup, GLib } = imports.gi;
+
+const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-import * as Main from "resource:///org/gnome/shell/ui/main.js";
+const Main = imports.ui.main;
+const PanelMenu = imports.ui.panelMenu;
 
 let panelButton;
 let panelButtonText;
@@ -67,6 +69,9 @@ function disable() {
 
 // Handle Requests API Dollar
 async function handle_request_dollar_api() {
+    let upDown = null;
+    let upDownIcon = null;
+    
     try {
         // Create a new Soup Session
         if (!session) {
@@ -84,13 +89,16 @@ async function handle_request_dollar_api() {
             const body_response = JSON.parse(response);
 
             // Get the value of Dollar Quotation
+            upDown = body_response["USDBRL"]["varBid"];
             dollarQuotation = body_response["USDBRL"]["bid"];
             dollarQuotation = dollarQuotation.split(".");
             dollarQuotation = dollarQuotation[0] + "," + dollarQuotation[1].substring(0, 2);
 
+            parseFloat(upDown) > 0 ? upDownIcon = "⬆" : upDownIcon = "⬇";
+
             // Set text in Widget
             panelButtonText = new St.Label({
-                text: "(USD: 1,00) = (BRL: " + dollarQuotation + ")",
+                text: "(USD: 1,00) = (BR: " + dollarQuotation + ")" + upDownIcon,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
