@@ -71,7 +71,7 @@ function disable() {
 async function handle_request_dollar_api() {
     let upDown = null;
     let upDownIcon = null;
-    
+
     try {
         // Create a new Soup Session
         if (!session) {
@@ -98,7 +98,7 @@ async function handle_request_dollar_api() {
 
             // Set text in Widget
             panelButtonText = new St.Label({
-                text: "(USD: 1,00) = (BR: " + dollarQuotation + ")" + upDownIcon,
+                text: "(U$: 1,00) = (R$: " + dollarQuotation + ") " + upDownIcon,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
