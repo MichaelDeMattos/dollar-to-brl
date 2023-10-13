@@ -111,7 +111,7 @@ async function handle_request_dollar_api() {
     } catch (error) {
         log(`Traceback Error in [handle_request_dollar_api]: ${error}`);
         panelButtonText = new St.Label({
-            text: "(USD: 1,00) = (BRL: " + _dollarQuotation + ")" + " * ",
+            text: "(U$: 1,00) = (R$: " + _dollarQuotation + ")" + " * ",
             y_align: Clutter.ActorAlign.CENTER,
         });
         panelButton.set_child(panelButtonText);
