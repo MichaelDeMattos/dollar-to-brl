@@ -18,103 +18,76 @@
 
 'use strict';
 
-const { St, Gio, Clutter, Soup, GLib } = imports.gi;
+import GLib from 'gi://GLib';
+import St from 'gi://St';
+import Clutter from 'gi://Clutter';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
+import getCoinConversion from './services/AwesomeApi.js';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
+// consts
+var panelButton;
+var panelButtonText;
+var sourceId = null;
 
-let panelButton;
-let panelButtonText;
-let session;
-let dollarQuotation;
-let sourceId = null;
 
-// Start application
-function init() {
-    log(`initializing ${Me.metadata.name}`);
-}
+export default class DollarToBrlExtension extends Extension {
+    // Update Extension Widgets
+    _update(coinConversion = null) {
+        let upDownIcon = null;
 
-// Add the button to the panel
-function enable() {
-    log(`enabling ${Me.metadata.name}`);
-    panelButton = new St.Bin({
-        style_class: "panel-button",
-    });
-
-    handle_request_dollar_api();
-    Main.panel._centerBox.insert_child_at_index(panelButton, 0);
-    sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
-        handle_request_dollar_api();
-        return GLib.SOURCE_CONTINUE;
-    });
-}
-
-// Remove the added button from panel
-function disable() {
-    log(`disabling ${Me.metadata.name}`);
-    Main.panel._centerBox.remove_child(panelButton);
-
-    if (panelButton) {
-        panelButton.destroy();
-        panelButton = null;
-    }
-
-    if (sourceId) {
-        GLib.Source.remove(sourceId);
-        sourceId = null;
-    }
-}
-
-// Handle Requests API Dollar
-async function handle_request_dollar_api() {
-    let upDown = null;
-    let upDownIcon = null;
-
-    try {
-        // Create a new Soup Session
-        if (!session) {
-            session = new Soup.Session({ timeout: 10 });
-        }
-
-        // Create body of Soup request
-        let message = Soup.Message.new_from_encoded_form(
-            "GET", "https://economia.awesomeapi.com.br/last/USD-BRL", Soup.form_encode_hash({}));
-
-        // Send Soup request to API Server
-        await session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_, r0) => {
-            let text = session.send_and_read_finish(r0);
-            let response = new TextDecoder().decode(text.get_data());
-            const body_response = JSON.parse(response);
-
-            // Get the value of Dollar Quotation
-            upDown = body_response["USDBRL"]["varBid"];
-            dollarQuotation = body_response["USDBRL"]["bid"];
-            dollarQuotation = dollarQuotation.split(".");
-            dollarQuotation = dollarQuotation[0] + "," + dollarQuotation[1].substring(0, 2);
-
-            parseFloat(upDown) > 0 ? upDownIcon = "⬆" : upDownIcon = "⬇";
-
+        if (coinConversion) {
+            parseFloat(coinConversion["varBid"]) > 0 ? upDownIcon = "⬆" : upDownIcon = "⬇";
             // Set text in Widget
             panelButtonText = new St.Label({
-                text: "(U$: 1,00) = (R$: " + dollarQuotation + ") " + upDownIcon,
+                text: "(U$: 1,00) = (R$: " + coinConversion["coinBid"] + ") " + upDownIcon,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
 
-            // Finish Soup Session
-            session.abort();
-            text = undefined;
-            response = undefined;
-        });
-    } catch (error) {
-        log(`Traceback Error in [handle_request_dollar_api]: ${error}`);
-        panelButtonText = new St.Label({
-            text: "(U$: 1,00) = (R$: " + _dollarQuotation + ")" + " * ",
-            y_align: Clutter.ActorAlign.CENTER,
-        });
-        panelButton.set_child(panelButtonText);
-        session.abort();
+        } else {
+            panelButtonText = new St.Label({
+                text: "(U$: 1,00) = (R$: ?",
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            panelButton.set_child(panelButtonText);
+        }
     }
+
+    // Start Extension
+    init() {
+        console.log(`[dollar-to-brl][extension.js][init] start extension`);
+    }
+
+    // Enable Extension
+    enable() {
+        console.log('[dollar-to-brl][extension.js][enable] enable extension');
+        panelButton = new St.Bin({
+            style_class: "panel-button",
+        });
+        this._update(getCoinConversion());
+        Main.panel._centerBox.insert_child_at_index(panelButton, 0);
+        sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
+            this._update(getCoinConversion());
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    // Disable Extension
+    disable() {
+        console.log('[dollar-to-brl][extension.js][disable] disable extension');
+
+        Main.panel._centerBox.remove_child(panelButton);
+
+        if (panelButton) {
+            panelButton.destroy();
+            panelButton = null;
+        }
+
+        if (sourceId) {
+            GLib.Source.remove(sourceId);
+            sourceId = null;
+        }
+    }
+
 }
